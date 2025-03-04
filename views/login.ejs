@@ -1,0 +1,159 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="./logo.png">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #c8cbcf, #45aaf2);
+            color: #fff;
+            text-align: center;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background-color: rgba(0, 0, 0, 0.7); 
+            padding: 30px;
+            border-radius: 10px;
+            display: inline-block;
+            width: 100%;
+            max-width: 400px;
+            box-sizing: border-box;
+            text-align: left;
+        }
+
+        h2 {
+            color: #ff5e00; 
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
+
+        input[type="email"],
+        input[type="password"],
+        input[type="submit"] {
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            width: 100%;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        input[type="email"],
+        input[type="password"] {
+            background-color: #555;
+            color: white;
+        }
+
+        input[type="submit"] {
+            background-color: #2f89fc;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45aaf2;
+        }
+
+        .register-btn {
+            background-color: #2f89fc;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .register-btn:hover {
+            background-color: #45aaf2;
+        }
+
+        .dont-have-account-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .dont-have-account {
+            color: #fff;
+            font-size: 18px;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5em;
+            }
+
+            form {
+                padding: 20px;
+                width: 80%;
+            }
+
+            input[type="email"],
+            input[type="password"],
+            input[type="submit"],
+            .register-btn {
+                width: 90%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            form {
+                padding: 15px;
+                width: 90%;
+            }
+
+            input[type="email"],
+            input[type="password"],
+            input[type="submit"],
+            .register-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Login</h1>
+    <form action="" method="POST">
+        <input type="email" placeholder="Enter Email" name="email" required><br>
+        <input type="password" placeholder="Enter Password" name="password" required><br>
+
+        <% if (message) { %>
+            <h2><%= message %></h2>
+        <% } %>
+
+        <input type="submit" value="Login"> 
+
+        <div class="dont-have-account-container">
+            <span class="dont-have-account">
+                Don't have an account?
+            </span>
+            <button class="register-btn">
+                <a href="/Chat_App/register" style="color: white; text-decoration: none;">Register</a>
+            </button>
+        </div>
+    </form>
+</body>
+</html>

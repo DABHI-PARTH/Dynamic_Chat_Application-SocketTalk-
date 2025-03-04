@@ -1,0 +1,186 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../public/logo.png">
+    <title>Register</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #c8cbcf, #45aaf2);
+            color: #fff;
+            text-align: center;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; 
+            flex-direction: column;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background-color: rgba(0, 0, 0, 0.7); 
+            padding: 30px;
+            border-radius: 10px;
+            display: inline-block;
+            width: 100%;
+            max-width: 400px;
+            box-sizing: border-box;
+            text-align: left;
+        }
+
+        h2 {
+            color: #ff5e00;
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="submit"] {
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            width: 100%;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            background-color: #555;
+            color: white;
+        }
+
+        input[type="submit"] {
+            background-color: #2f89fc;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45aaf2;
+        }
+
+        input[type="file"] {
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background-color: #555;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            text-align: center;
+        }
+
+        input[type="file"]::-webkit-file-upload-button {
+            background-color: #2f89fc;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        input[type="file"]::-webkit-file-upload-button:hover {
+            background-color: #45aaf2;
+        }
+
+        .file-error {
+            color:  white;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5em;
+            }
+
+            form {
+                padding: 20px;
+                width: 80%;
+            }
+
+            input[type="text"],
+            input[type="email"],
+            input[type="password"],
+            input[type="file"],
+            input[type="submit"] {
+                width: 90%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            form {
+                padding: 15px;
+                width: 90%;
+            }
+
+            input[type="text"],
+            input[type="email"],
+            input[type="password"],
+            input[type="file"],
+            input[type="submit"] {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Register</h1>
+    <form id="register-form" action="" method="POST" enctype="multipart/form-data">
+        <input type="text" name="name" placeholder="Enter Name" required><br>
+        <input type="email" name="email" placeholder="Enter Email" required><br>
+        <input type="file" name="image" accept=".jpg, .jpeg, .png" required><br>
+        <input type="password" name="password" placeholder="Enter Password" required><br>
+        <input type="submit" value="Register"> 
+        <p class="file-error" id="file-error-message"></p>
+        <% if (message) { %>
+            <h2 style="color:  white;"><%= message %></h2>
+        <% } %>
+    </form>
+
+    <script>
+        const fileInput = document.querySelector('input[type="file"]');
+        const form = document.getElementById('register-form');
+        const errorMessage = document.getElementById('file-error-message');
+
+        form.addEventListener('submit', function(event) {
+            const file = fileInput.files[0];
+
+            if (file) {
+                const fileSize = file.size / 1024 / 1024; 
+                const allowedTypes = ['image/jpeg', 'image/png'];
+
+                if (fileSize > 5) {
+                    event.preventDefault();
+                    errorMessage.textContent = 'File size exceeds 5MB. Please upload a smaller file.';
+                } else if (!allowedTypes.includes(file.type)) {
+                    event.preventDefault();
+                    errorMessage.textContent = 'Only .jpg, .jpeg, and .png files are allowed.';
+                } else {
+                    errorMessage.textContent = ''; 
+                }
+            }
+        });
+    </script>
+</body>
+</html>
