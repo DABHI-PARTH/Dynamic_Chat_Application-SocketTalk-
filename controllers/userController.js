@@ -35,7 +35,7 @@ const register = async (req, res) => {
         const user = new User({
             name: req.body.name,
             email: req.body.email,
-            image: req.file.filename,
+            image: 'images/'+  req.file.filename,
             password: hashpass
         });
 
@@ -97,7 +97,6 @@ const loadDashboard= async(req,res)=>{
 
     try{
         if (req.session.user) {  
-
             var users= await User.find({_id: {$nin:[req.session.user._id]}});
             res.render('dashboard', { user: req.session.user ,users:users});  
         } else {
