@@ -45,7 +45,6 @@ SocketTalk is a real-time chat application built using modern web technologies t
    ```env
    PORT=4000
    MONGODB_URI=mongodb://localhost:27017/sockettalk
-   JWT_SECRET=your_jwt_secret_key
    ```
 
 4. **Start the Application**:
