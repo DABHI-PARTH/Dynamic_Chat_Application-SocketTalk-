@@ -1,5 +1,7 @@
+require('dotenv').config();
+url=process.env.MONGODB_URI;
 const mongoose=require('mongoose');
-mongoose.connect('mongodb://localhost:27017/Dynamic_Chat_App');
+mongoose.connect(url);
 const db=mongoose.connection;
 
 db.on('connected',()=>console.log("Database Connected"));
