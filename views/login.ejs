@@ -120,6 +120,7 @@
                 font-size: 2em;
             }
 
+            
             form {
                 padding: 15px;
                 width: 90%;
@@ -137,8 +138,8 @@
 <body>
     <h1>Login</h1>
     <form action="" method="POST">
-        <input type="email" placeholder="Enter Email" name="email" required><br>
-        <input type="password" placeholder="Enter Password" name="password" required><br>
+        <input type="email" placeholder="Enter Email" name="email" required autocomplete><br>
+        <input type="password" placeholder="Enter Password" name="password" required autocomplete><br>
 
         <% if (message) { %>
             <h2><%= message %></h2>

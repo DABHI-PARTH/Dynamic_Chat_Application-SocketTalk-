@@ -18,7 +18,7 @@ const userSchema= new mongoose.Schema({
     },
     is_online:{
         type:String,
-        defalut:'0',
+        defalut:"Offline"
     }
 },
 {timestamps:true}

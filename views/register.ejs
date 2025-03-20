@@ -147,11 +147,12 @@
 <body>
     <h1>Register</h1>
     <form id="register-form" action="" method="POST" enctype="multipart/form-data">
-        <input type="text" name="name" placeholder="Enter Name" required><br>
-        <input type="email" name="email" placeholder="Enter Email" required><br>
-        <input type="file" name="image" accept=".jpg, .jpeg, .png" required><br>
-        <input type="password" name="password" placeholder="Enter Password" required><br>
-        <input type="submit" value="Register"> 
+        <input type="text" name="name" placeholder="Enter Name" required autocomplete><br>
+        <input type="email" name="email" placeholder="Enter Email" required autocomplete><br>
+        Upload Profile Photo:
+        <input type="file" name="image" accept=".jpg, .jpeg, .png" required autocomplete><br>
+        <input type="password" name="password" placeholder="Enter Password" required autocomplete><br>
+        <input type="submit" value="Register" > 
         <p class="file-error" id="file-error-message"></p>
         <% if (message) { %>
             <h2 style="color:  white;"><%= message %></h2>
