@@ -103,9 +103,9 @@
                         let html = `
                             <div class="current-user-chat">
                                 <h5>`+chat+`</h5> 
-                                  
+                                <h5 class="time">` +response.data.updatedAt+`</h5>    
                             </div>
-                            <h5 class="time">` +response.data.updatedAt+`</h5>  
+                            
                            
                         `;
                         $jq('#chat-container').append(html);
@@ -123,9 +123,9 @@
                let html = `
                            <div class="distance-user-chat">
                                 <h5>` +data.message+`</h5>
-                                
+                                <h5 class="time">` +data.updatedAt+`</h5>
                             </div>
-                            <h5 class="time">` +data.updatedAt+`</h5>
+                            
                              
                         `;
                         $jq('#chat-container').append(html);
