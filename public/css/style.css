@@ -8356,7 +8356,7 @@ html, body {
 }
 
 #chat-container {
-  background-color: #E9F8F9;
+  background-color: #FBFBFB;
   border-radius: 15px;
   border: 6px solid whitesmoke;
   width: 100%;
@@ -8415,38 +8415,89 @@ html, body {
 
   }
   
+  #message{
+    border-radius: 10px;
+    color: #007bff;
+  }
 
   .offline-status{
     color:var(--red);
     background-color: bisque;
+    border-radius: 10px;
   }
   .online-status{
     color:var(--green);
     background-color: beige;
+    border-radius: 10px;
   }
   
-  .current-user-chat{
+  .current-user-chat h5, .distance-user-chat h5 {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 16px;
+}
+
+.current-user-chat h5, .distance-user-chat h5 {
+    margin: 5px 0;
+}
+
+.current-user-chat  {
     text-align: right;
     margin: 10px;
-    color:#04364A;
-
-  }
-  .distance-user-chat{
+    color: #04364A;
+}
+.current-user-chat  .time{
+  text-align: right;
+}
+.distance-user-chat  .time{
+  text-align: left;
+}
+.distance-user-chat  {
     text-align: left;
     margin: 10px 0;
-    color:#04364A;
-  }
+    color: #04364A;
+}
+.chat-box {
+  background-color: #BAD8B6; 
+  border-radius: 10px;
+  padding: 10px;
+  margin: 5px 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: inline-block;
+  max-width: 80%;
+  word-wrap: break-word;
+}
+
 
   .highlighted {
     margin: 10px 0;
     background-color: #f0f0f0;  
-    border: 4px solid #00A1E0;  
+    border: 4px solid #BAD8B6;  
     border-radius: 20px ;
 }
 .time{
-  margin-top: -15px;
+  margin-top: -1px;
   margin-right: -10px;
   font-size: 8px;
-  color: var(--blue);
+  color: #D99D81;
+}
+
+.current-user-chat .chat-box {
+  background-color: #D4F1F4; 
+}
+
+.distance-user-chat .chat-box {
+  background-color: #ADB2D4; 
+}
+
+#trash-btn{
+  color: red;
+  cursor: pointer;
+
+}
+#edit-btn{
+  color: #5F8B4C;
+  cursor: pointer;
+
 }
 
