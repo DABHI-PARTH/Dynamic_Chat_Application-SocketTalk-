@@ -39,8 +39,9 @@ user_route.get('/dashboard',userController.loadDashboard);
 user_route.get('*',(req,res)=>{
     res.redirect('/Chat_App/login')
 });
-user_route.post('/save-chat',userController.saveChat)
+user_route.post('/save-chat',userController.saveChat);
 
+user_route.post('/delete-chat',userController.deleteChat);
 
-
+user_route.post('/update-chat',userController.updateChat);
 module.exports=user_route;

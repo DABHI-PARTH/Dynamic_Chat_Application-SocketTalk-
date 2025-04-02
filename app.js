@@ -44,5 +44,15 @@ usp.on('connection',async (socket)=>{
         ]});
         socket.emit('loadChats',{chats:chats});
     });
+   
+   socket.on('ChatDeleted',function(data){
+           
+        socket.broadcast.emit('chatmsgdel',data);
+   });
+   socket.on('chatUpdated',function(data){
+    
+         socket.broadcast.emit('chatMessageUpdated',data);
+    });
+    
     
 });
