@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>SocketTalk</title>
+    <meta charset="utf-8">
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.2/socket.io.js" integrity="sha512-VJ6+sp2E5rFQk05caiXXzQd1wBABpjEj1r5kMiLmGAAgwPItw1YpqsCCBtq8Yr1x6C49/mTpRdXtq8O2RcZhlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
+  </head>
+  <body>
+    <div class="wrapper d-flex align-items-stretch">
+      <nav id="sidebar">
+        <div class="custom-menu">
+          <button type="button" id="sidebarCollapse" class="btn btn-primary">
+            <i class="fa fa-bars"></i>
+            <span class="sr-only">Toggle Menu</span>
+          </button>
+        </div>
+        <h1><a href="/Chat_App/dashboard" class="logo">SocketTalk</a></h1>
+        <ul class="list-unstyled components mb-5">
+          <li class="active">
+            <a href="/Chat_App/dashboard"><span class="fa fa-user mr-3"></span> Dashboard</a>
+          </li>
+          <li class="active">
+            <a href="/Chat_App/group"><span class="fa fa-group mr-3"></span>Groups</a>
+          </li>
+          <li>
+            <a href="/Chat_App/logout"><span class="fa fa-sign-out mr-3"></span> Logout</a>
+          </li>
+        </ul>
+      </nav>
+      <div id="content" class="p-4 p-md-5 pt-5">
+
+        <!--main-->
+        <br>
+        <h2 class="mb-4">
+          <span style="color:#0C356A; font: 50px sans-serif;">Groups</span>
+        </h2>
+        
+        <div class="container">
+          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createGroupModal">
+            Create Group
+          </button>
+
+          <table class="table mt-4">
+            <thead>
+              <tr>
+                <th>S.No</th>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Limit</th>
+                <th>Members</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Add groups dynamically -->
+              <% if(groups.length > 0){ 
+                for(let i = 0; i < groups.length; i++) { %>
+                  <tr>
+                    <td><%= i+1 %></td> 
+                    <td>
+                      <img src="<%=groups[i]['image']%>" alt="<%= groups[i]['name'] %>" width="50px" height="50px" style="border-radius: 100px;">
+                    </td>
+                    <td><%=groups[i]['name']%></td>
+                    <td><%=groups[i]['limit']%></td>
+                    <td>
+                      <a class="cursor-pointer addMember" href="Members" data-id="<%=groups[i]['_id']%>" data-limit="<%=groups[i]['limit']%>" data-toggle="modal" data-target="#memberModal">Members</a>
+                    </td>
+                    <td>
+                      <a class="updateGroup" href="Update" data-obj="<%= JSON.stringify(groups[i]) %>" data-toggle="modal" data-target="#updateGroupModal"><b style="color:var(--green);">Update <i class="fa fa-pencil"></i></b></a>
+                      <a class="deleteGroup" href="Delete" data-id="<%= groups[i]['_id'] %>" data-name="<%= groups[i]['name'] %>"data-toggle="modal" data-target="#deleteGroupModal"><b style="color: red; ">Delete <i class="fa fa-trash">    </i></b></a>
+                      <a class="copy" href="Copy" data-id="<%= groups[i]['_id'] %>" ><b style="color: var(--blue);  "> CopyLink <i class="fa fa-copy"> </i></b></a>
+        
+                    </td>
+                  </tr>
+                <% } 
+              } else { %>
+                <tr><td>No Groups Found!</td></tr>
+              <% } %>
+            </tbody>
+          </table>
+
+          
+        <!-- Member Modal -->
+<div class="modal fade" id="memberModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLongTitle">Group Members</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <form id="add-member-form">
+              <div class="modal-body p-0">
+                  <input type="hidden" name="group_id" id="group_id">
+                  <input type="hidden" name="limit" id="limit">
+                  <div class="members-container px-3 py-2" style="max-height: 70vh; overflow-y: auto;">
+                      
+                  </div>
+              </div>
+              <div class="modal-footer">
+                  <p id="add-member-error" class="text-danger mb-0"></p>
+                  <button id="canc-btn" type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary">Update Members</button>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
+
+          <!-- Group Modal -->
+          <div class="modal fade" id="createGroupModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLongTitle">Create Group</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <form id="group-form" method="POST" action="" enctype="multipart/form-data">
+                  <div class="modal-body">
+                    <input type="text" name="name" placeholder="Enter Group Name" required class="w-50 mb-2" autocomplete="Group"><br>
+                    Upload Profile Photo:<br>
+                    <input type="file" name="image" accept=".jpg, .jpeg, .png" class="w-50 mb-2">
+                    <p class="file-error" id="file-error-message" style="color: red;"></p>
+                    <input type="number" min="1" placeholder="Enter Group User limit" name="limit" max="100" required class="w-50 mb-2" autocomplete="1">
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" id="canc-btn" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Create</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+             <!--Update Group Modal -->
+          <div class="modal fade" id="updateGroupModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLongTitle">Update Group</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <form id="UpdateChatGroupForm" method="POST" action="" enctype="multipart/form-data">
+                  <div class="modal-body">
+                    <input type="hidden" name="id" id="update_group_id" />
+                    <input type="hidden" name="last_limit" id="last_limit" />
+                    <input type="text" name="name" id="group_name" placeholder="Enter Updated Group Name"  class="w-50 mb-2" autocomplete="Group" required><br>
+
+                    Updated Profile Photo:<br>
+                    <input type="file" name="image" accept=".jpg, .jpeg, .png" id="group_image"  class="w-50 mb-2">
+                    <p class="file-error" id="file-error-message_" style="color: red;"></p>
+                    <input type="number" min="1" id="group_limit"placeholder="Enter Updated User limit" name="limit" max="100" required class="w-50 mb-2" autocomplete="1" >
+                    <p>
+                      <b style="color: red;">Note:</b><h5 style="color:blue; font-size: small;">If you enter the limit less than to previous limit we will remove the all users from your group.</h5>
+                    </p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" id="canc-btn" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          
+             <!--Delete Group Modal -->
+             <div class="modal fade" id="deleteGroupModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Delete Group</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <form id="deleteChatGroupForm" method="POST" >
+                    <div class="modal-body">
+                      <input type="hidden" name="id" id="delete_group_id" />
+                      <p>
+                       <h5 style="color:rgb(255, 17, 0); font-size: small;">Are you sure you want to delete <b id="delete_group_name" style="color: var(--blue);"></b>group?</h5>
+                      </p>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" id="canc-btn" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      <button type="submit" class="btn btn-danger">Delete</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+
+        </div>
+
+        <script>
+        const fileInput = document.querySelector('input[type="file"]');
+        const form = document.getElementById('group-form');
+        const errorMessage = document.getElementById('file-error-message');
+
+        form.addEventListener('submit', function(event) {
+            const file = fileInput.files[0];
+
+            if (file) {
+                const fileSize = file.size / 1024 / 1024; 
+                const allowedTypes = ['image/jpeg', 'image/png'];
+
+                if (fileSize > 5) {
+                    event.preventDefault();
+                    errorMessage.textContent = 'File size exceeds 5MB. Please upload a smaller file.';
+                } else if (!allowedTypes.includes(file.type)) {
+                    event.preventDefault();
+                    errorMessage.textContent = 'Only .jpg, .jpeg, and .png files are allowed.';
+                } else {
+                    errorMessage.textContent = ''; 
+                }
+            }
+        });
+
+        const updateForm = document.getElementById('UpdateChatGroupForm');
+  const updateFileInput = updateForm.querySelector('input[type="file"]');
+  const updateErrorMsg = document.getElementById('file-error-message_');
+
+  updateForm.addEventListener('submit', function(event) {
+    const file = updateFileInput.files[0];
+
+    if (file) {
+      const fileSizeMB = file.size / 1024 / 1024;
+      const allowedTypes = ['image/jpeg', 'image/png'];
+
+      if (fileSizeMB > 5) {
+        event.preventDefault();
+        updateErrorMsg.textContent = 'File size exceeds 5MB. Please upload a smaller file.';
+      } else if (!allowedTypes.includes(file.type)) {
+        event.preventDefault();
+        updateErrorMsg.textContent = 'Only .jpg, .jpeg, and .png files are allowed.';
+      } else {
+        updateErrorMsg.textContent = '';
+      }
+    } else {
+      updateErrorMsg.textContent = '';
+    }
+  });
+
+         var $jq = jQuery.noConflict(); 
+        var sender_id = '<%= user._id %>';
+       var socket = io('/user-namespace', {
+            auth: {
+                token: sender_id,
+            }
+        });
+
+        $jq('.addMember').click(function(){
+    var id = $jq(this).attr('data-id');
+    var limit = $jq(this).attr('data-limit');
+    
+    $jq('#group_id').val(id);
+    $jq('#limit').val(limit);
+    
+    $jq.ajax({
+        url: './get-members',
+        type: 'POST',
+        data: { group_id: id },
+        success: function(res) {
+            if (res.success === true) {
+                let users = res.data;
+                let html = '';
+
+                for (let i = 0; i < users.length; i++) {
+                    html += `
+                        <div class="member-item">
+                            <img src="${users[i].image || 'images/default-user.png'}" alt="${users[i].name}">
+                            <div class="member-info">
+                                <div class="member-name">${users[i].name}</div>
+                            </div>
+                            <div class="member-checkbox">
+                                <input type="checkbox" ${users[i].isMember ? 'checked' : ''} 
+                                       name="members[]" value="${users[i]._id}"/>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                $jq('.members-container').html(html);
+            } else {
+                alert(res.msg);
+            }
+        },
+        error: function(err) {
+            console.error("Error: ", err);
+            alert("An error occurred while fetching members.");
+        }
+    });
+});
+          $jq('#add-member-form').submit(function(event){
+            event.preventDefault();
+
+            var formData= $jq(this).serialize();
+
+            $jq.ajax({
+              url:'./add-members',
+              type:'POST',
+              data: formData,
+              success: function(res) {
+              if(res.success){
+                alert(res.msg);
+                $jq('#add-member-form')[0].reset();
+                $jq('#canc-btn').click();
+               
+              }else{
+                
+                $jq('#add-member-error').text(res.msg);
+                setTimeout(()=>{
+                  $jq('#add-member-error').text('');
+                },2000);
+               
+              }
+              }
+
+            })
+          });
+
+
+
+          $jq('.updateGroup').click(function(){
+            
+          var obj= JSON.parse( $jq(this).attr('data-obj'));
+          $jq('#update_group_id').val(obj._id);
+          $jq('#last_limit').val(obj.limit);
+          $jq('#group_name').val(obj.name);
+          $jq('#group_limit').val(obj.limit);
+         
+          });
+
+          $jq('#UpdateChatGroupForm').submit(function(event){
+            event.preventDefault();
+            $jq.ajax({
+              url:'./update-chat-group',
+              type:'POST',
+              data: new FormData(this),
+              contentType:false,
+              cache:false,
+              processData:false,
+              success: function(res) {
+                alert(res.msg);
+              if(res.success){
+                $jq('#canc-btn').click();
+                location.reload();
+              }
+            }
+            });
+          });
+
+
+          $jq('.deleteGroup').click(function(){
+           $jq('#delete_group_id').val($jq(this).attr('data-id'));
+            $jq('#delete_group_name').text($jq(this).attr('data-name'));
+          });
+          $jq('#deleteChatGroupForm').submit(function(event){
+            event.preventDefault();
+            var formData =$jq(this).serialize();
+            $jq.ajax({
+              url:'./delete-chat-group',
+              type:'POST',
+              data: formData,
+              success: function(res) {
+                alert(res.msg);
+              if(res.success){
+                $jq('#canc-btn').click();
+                location.reload();
+              }
+            }
+            });
+          });
+
+          $jq('.copy').click(function(){
+         $jq(this).prepend('<span class="copied_text">Copied</span>');
+        var group_id= $jq(this).attr('data-id');
+        var url= window.location.host + '/Chat_App/share-group/'+group_id;
+        var temp=$jq("<input>");
+        $jq("body").append(temp);
+        temp.val(url).select();
+        document.execCommand("copy");
+        temp.remove();
+        setTimeout(()=>{
+            $jq('.copied_text').remove();
+           },2000);
+          });
+
+
+
+
+        </script>
+
+      </div>
+    </div>
+
+    <script src="js/popper.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/main.js"></script>
+
+  </body>
+</html>
