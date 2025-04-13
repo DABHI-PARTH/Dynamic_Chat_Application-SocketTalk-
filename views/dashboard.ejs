@@ -391,9 +391,12 @@
                     success: function(res) {
                         if (res.success == true) {
                             $jq('#'+id).remove();
-                            $jq('#canc-btn').click();
-                            $jq('#deleteChatModal').hide();
                             socket.emit('ChatDeleted',id);
+                            if($jq('#canc-btn').click()){
+                                $jq('#deleteChatModal').hide();
+                                $jq('#deleteChatModal').click();
+                                $jq('#canc-btn').click();
+                            }
                         } else {
                             alert(res.msg);  
                         }
