@@ -8402,10 +8402,6 @@ html, body {
   }
 }
 
-
-
-
-  
   .border{
     width:75%;
   
@@ -8701,3 +8697,69 @@ html, body {
   margin-left: 10px;
   font-size: 14px;
 }
+
+.modal-backdrop {
+  opacity: 0.5 !important;
+  background-color: #000 !important;
+}
+
+.modal-backdrop.show {
+  opacity: 0.5 !important;
+}
+
+.modal {
+  z-index: 1060;
+}
+
+.profile-btn {
+  background-color: #0C356A;
+  color: white;
+  border: none;
+  padding: 5px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-left: 10px;
+  transition: all 0.3s;
+}
+.profile-btn:hover {
+  background-color: #0174BE;
+}
+.profile-img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 15px;
+  border: 3px solid #0C356A;
+}
+.profile-details {
+  text-align: center;
+  padding: 20px;
+}
+.profile-name {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #0C356A;
+}
+.profile-email {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 20px;
+}
+.delete-profile-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s;
+}
+.delete-profile-btn:hover {
+  background-color: #c82333;
+}
+
+

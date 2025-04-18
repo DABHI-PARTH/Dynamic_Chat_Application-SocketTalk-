@@ -2,10 +2,11 @@ const User = require('../models/userModel');
 const Chat = require('../models/chatModel');
 const Group= require('../models/groupModel');
 const Member= require('../models/memberModel');
+const GroupChat= require('../models/groupChatModel');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
 const mongoose=require('mongoose');
-const { param } = require('../routes/userRoute');
+
 
 const registerLoad = async (req, res) => {
     try {
@@ -159,7 +160,7 @@ const loadGroups = async (req, res) => {
             const user = req.session.user;
         const users = await User.find({ _id: { $ne: user._id } });
         
-         const groups=  await Group.find({creator_id:req.session.user.id});
+         const groups=  await Group.find({creator_id:req.session.user._id});
             res.render('layouts/group',{groups:groups,user,users});
 
     }
@@ -176,7 +177,7 @@ const createGroup = async (req, res) => {
                 return res.redirect('/Chat_App/login');
             }
            const group= new Group({
-                creator_id: req.session.user.id,
+                creator_id: req.session.user._id,
                 name: req.body.name,
                 image: 'images/' + req.file.filename,
                 limit: req.body.limit
@@ -289,6 +290,170 @@ const deleteChatGroup= async(req,res)=>{
 }
 };
 
+const deleteProfile = async (req, res) => {
+    try {
+        const userId = req.body.userId;
+ 
+        await Chat.deleteMany({ 
+            $or: [
+                { sender_id: userId },
+                { receiver_id: userId }
+            ] 
+        });
+
+        await GroupChat.deleteMany({ sender_id: userId });
+
+        await Member.deleteMany({ user_id: userId });
+
+        const groupsOwned = await Group.find({ creator_id: userId });
+
+        await GroupChat.deleteMany({ 
+            group_id: { $in: groupsOwned.map(g => g._id) } 
+        });
+
+        await Member.deleteMany({ 
+            group_id: { $in: groupsOwned.map(g => g._id) } 
+        });
+
+        await Group.deleteMany({ creator_id: userId });
+
+        await User.findByIdAndDelete(userId);
+
+        req.session.destroy();
+        
+        res.json({ success: true });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, msg: 'Server error' });
+    }
+};
+const shareGroup= async(req,res)=>{
+try{
+    var groupData=await Group.findOne({_id:req.params.id});
+    if(!groupData){
+        res.render('error',{message:'404 not found!'});
+    }
+    else if(req.session.user == undefined){
+        res.render('error',{message:'You need to login to access the Shared URL'});
+    }
+    else{
+        const user = req.session.user;
+   var totalMembers = await Member.countDocuments({ group_id: req.params.id });
+   var available = groupData.limit -totalMembers;
+
+   var isOwner = groupData.creator_id == req.session.user._id ?true: false;
+   var isJoined = await Member.find({group_id:req.params.id,user_id:req.session.user._id}).countDocuments();
+   res.render('shareLink',{group:groupData,available:available, totalMembers:totalMembers,isOwner:isOwner,isJoined:isJoined,user});
+
+    }
+
+}
+ catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, msg: 'Server error' });
+    }
+};
+
+const joinGroup=async(req,res)=>{
+    try{
+      const member = new Member({
+        group_id:req.body.group_id,
+        user_id:req.session.user._id,
+      });
+      await member.save(); 
+
+        res.send({success:true,msg:'Congratulation,you have Joined the Group Successfully!'});
+
+    }
+    catch(error){
+      res.send({success:false,msg:error.message});
+    }
+}
+const groupChats=async(req,res)=>{
+    try{
+        if (!req.session.user) {
+            return res.redirect('/Chat_App/login');
+        }
+        const user = req.session.user;
+     const myGroups = await Group.find({creator_id:req.session.user._id});
+     const joinedGroups = await Member.find({user_id:req.session.user._id}).populate('group_id');
+     res.render('chat-group',{myGroups:myGroups,joinedGroups:joinedGroups,user:user})
+    }
+    catch(error){
+      console.log(error.message);
+    }
+}
+
+const saveGroupChat = async (req, res) => {
+    try {
+        if (!req.session.user) {
+            return res.redirect('/Chat_App/login');
+        }
+        const { sender_id, group_id, message,} = req.body;
+
+        const chat = new GroupChat({
+            sender_id,
+            group_id,
+            message,
+        });
+
+      var newChat=  await chat.save();
+
+        res.send({
+            success: true,
+             chat : newChat
+        });
+    } catch (err) {
+        console.log(err);
+        res.send({ success: false, msg: 'Failed to save chat' });
+    }
+};
+
+const loadGroupChats = async (req, res) => {
+    try {
+        const groupChats = await GroupChat.find({group_id: req.body.group_id})
+            .populate({
+                path: 'sender_id',
+                select: 'name image'
+            })
+            .sort({ createdAt: 1 });
+
+        res.send({ 
+            success: true,
+            chats: groupChats 
+        });
+    } catch (err) {
+        console.log(err);
+        res.send({ success: false, msg: 'Failed to load chat' });
+    }
+};
+
+const deleteGroupChats = async (req, res) => {
+    try {
+
+      await  GroupChat.deleteOne({_id:req.body.id});
+        res.send({success: true,msg:'Chat Deleted' });
+    } catch (err) {
+        console.log(err);
+        res.send({ success: false, msg: 'Failed to delete chat' });
+    }
+};
+
+const updateGroupChats = async (req, res) => {
+    try {
+
+      await  GroupChat.findByIdAndUpdate({_id:req.body.id},{
+        $set:{
+            message: req.body.message
+        }
+      });
+        res.send({success: true,msg:'Chat Updated' });
+    } catch (err) {
+        console.log(err);
+        res.send({ success: false, msg: 'Failed to update chat' });
+    }
+};
+
 
 module.exports = {
     registerLoad,
@@ -306,5 +471,14 @@ module.exports = {
     addMembers,
     updateChatGroup,
     deleteChatGroup,
+    deleteProfile,
+    shareGroup,
+    joinGroup,
+    groupChats,
+    saveGroupChat,
+    loadGroupChats,
+    deleteGroupChats,
+    updateGroupChats,
+    
 
 };

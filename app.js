@@ -54,5 +54,14 @@ usp.on('connection',async (socket)=>{
          socket.broadcast.emit('chatMessageUpdated',data);
     });
     
-    
+    socket.on('newGroupChat',function(data){
+        socket.broadcast.emit('loadNewGroupChat',data);
+    });
+
+    socket.on('groupChatDeleted',function(id){
+        socket.broadcast.emit('groupChatMessageDeleted',id);
+    });
+    socket.on('groupChatUpdated',function(data){
+        socket.broadcast.emit('groupChatMessageUpdated',data);
+    });
 });

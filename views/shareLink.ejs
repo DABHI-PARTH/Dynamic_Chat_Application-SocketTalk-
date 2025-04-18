@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SocketTalk</title>
+    <link rel="icon" type="image/png" href="/Chat_App/images/logo.png">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.2/socket.io.js" integrity="sha512-VJ6+sp2E5rFQk05caiXXzQd1wBABpjEj1r5kMiLmGAAgwPItw1YpqsCCBtq8Yr1x6C49/mTpRdXtq8O2RcZhlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2f89fc;
+            --secondary-color: #212121;
+            --text-color: #333;
+            --light-text: #777;
+            --bg-color: #f8f9fc;
+            --card-bg: #ffffff;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        html, body {
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+        }
+        
+        .wrapper {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        #sidebar {
+            width: 250px;
+            background: var(--secondary-color);
+            color: #fff;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            transition: left 0.3s ease;
+        }
+        
+        #sidebar.hidden {
+            left: -250px;
+        }
+        
+        #sidebar .logo {
+            padding: 15px 30px;
+            background: var(--primary-color);
+            font-size: 20px;
+            text-decoration: none;
+            color: white;
+            display: block;
+            font-weight: 600;
+        }
+        
+        #sidebar ul.components {
+            padding: 0;
+            list-style: none;
+            margin: 0;
+        }
+        
+        #sidebar ul li a {
+            padding: 15px 30px;
+            display: block;
+            color: #fff;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 400;
+        }
+        
+        #sidebar ul li a:hover,
+        #sidebar ul li.active a {
+            background: var(--primary-color);
+            color: #fff;
+            padding-left: 35px;
+        }
+        
+        #sidebar ul li a .fa {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+            font-size: 18px;
+        }
+        
+        #container {
+            margin-left: 250px;
+            padding: 30px;
+            width: calc(100% - 250px);
+            min-height: 100vh;
+            transition: margin-left 0.3s ease, width 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: left;
+            
+        }
+        
+        .custom-menu {
+            position: absolute;
+            top: 10px;
+            right: -50px;
+            z-index: 1001;
+        }
+        
+        .btn.btn-primary {
+            background: transparent;
+            border: none;
+            color: #000;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        
+        .btn.btn-primary:hover {
+            background: transparent;
+        }
+        
+        .btn.btn-primary i {
+            font-size: 24px;
+        }
+        
+        .group-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--box-shadow);
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .group-image-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+        
+        .group-image {
+            border-radius: var(--border-radius);
+            object-fit: cover;
+            width: 200px;
+            height: 200px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border: 3px solid var(--primary-color);
+        }
+        
+        .group-info {
+            text-align: center;
+        }
+        
+        .group-name {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+        
+        .group-meta {
+            font-size: 16px;
+            margin-bottom: 20px;
+            color: var(--light-text);
+        }
+        
+        .group-status {
+            font-size: 16px;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            background: rgba(47, 137, 252, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .join-btn {
+            background-color: var(--primary-color);
+            border: none;
+            height: 45px;
+            width: 150px;
+            border-radius: var(--border-radius);
+            color: #fff;
+            font-weight: 500;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(47, 137, 252, 0.2);
+            margin-top: 10px;
+        }
+        
+        .join-btn:hover {
+            background-color: #1a73e8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(47, 137, 252, 0.3);
+        }
+        
+        .join-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .icon-success {
+            color: #4CAF50;
+            margin-right: 8px;
+        }
+        
+        .icon-error {
+            color: #F44336;
+            margin-right: 8px;
+        }
+        
+        .icon-crown {
+            color: gold;
+            margin-right: 8px;
+        }
+        
+        @media (max-width: 991.98px) {
+            #sidebar {
+                left: -250px;
+            }
+            
+            #sidebar.active {
+                left: 0;
+            }
+            
+            #container {
+                width: 100%;
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            #sidebar.active + #container {
+                margin-left: 250px;
+                width: calc(100% - 250px);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .group-card {
+                padding: 20px;
+            }
+            
+            .group-image {
+                width: 160px;
+                height: 160px;
+            }
+            
+            .group-name {
+                font-size: 20px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            #container {
+                padding: 15px;
+            }
+            
+            .group-image {
+                width: 140px;
+                height: 140px;
+            }
+            
+            .group-status {
+                font-size: 14px;
+                padding: 10px 15px;
+            }
+            
+            .join-btn {
+                width: 130px;
+                height: 40px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="wrapper d-flex align-items-stretch">
+    <nav id="sidebar">
+        <div class="custom-menu">
+            <button type="button" id="sidebarCollapse" class="btn btn-primary">
+                <i class="fa fa-bars"></i>
+                <span class="sr-only">Toggle Menu</span>
+            </button>
+        </div>
+        <h1><a href="/Chat_App/dashboard" class="logo"><span class="lt">SocketTalk</span></a></h1>
+        <ul class="list-unstyled components mb-5">
+            <li><a href="/Chat_App/dashboard"><span class="fa fa-user mr-3"></span> Dashboard</a></li>
+            <li><a href="/Chat_App/group"><span class="fa fa-group mr-3"></span> Groups</a></li>
+            <li><a href="/Chat_App/group-chat"><span class="fa fa-commenting-o mr-3"></span> Group Chat</a></li>
+            <li><a href="/Chat_App/logout" style="color: #aaa;"><span class="fa fa-sign-out mr-3"></span> Logout</a></li>
+        </ul>
+    </nav>
+
+    <div id="container">
+        <br><br>
+        <div class="group-card">
+            <div class="group-image-container">
+                <img class="group-image" src="/Chat_App/<%= group.image %>" alt="<%= group.name %>">
+            </div>
+            
+            <div class="group-info">
+                <h2 class="group-name"><%= group.name %></h2>
+                <p class="group-meta"><b>Total Members:</b> <%= totalMembers %></p>
+                
+                <div class="group-status">
+                    <% if(isOwner){ %>
+                        <p>👑 <b>You are the creator of this group</b></p>
+                    <% } else if(isJoined > 0){ %>
+                        <p><i class="fa fa-thumbs-up icon-success"></i> <b>You've already joined this group</b></p>
+                    <% } else if(available == 0){ %>
+                        <p><i class="fa fa-thumbs-down icon-error"></i> <b>Group is full</b></p>
+                    <% } else { %>
+                        <p><i class="fa fa-user-plus"></i> <b>Available for <%= available %> more members</b></p>
+                        <button type="submit" class="join-btn" data-id="<%= group._id %>">
+                            <i class="fa fa-sign-in"></i> Join Now
+                        </button>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    var $jq = jQuery.noConflict();
+    var sender_id = '<%= user._id %>';
+    var socket;
+
+    $jq(document).ready(function () {
+        socket = io('/user-namespace', {
+            auth: {token: sender_id}
+        });
+
+        $jq('#sidebarCollapse').on('click', function () {
+            if ($jq(window).width() > 991.98) {
+                $jq('#sidebar').toggleClass('hidden');
+                if ($jq('#sidebar').hasClass('hidden')) {
+                    $jq('#container').css({'margin-left': '0', 'width': '100%'});
+                } else {
+                    $jq('#container').css({'margin-left': '250px', 'width': 'calc(100% - 250px)'});
+                }
+            } else {
+                $jq('#sidebar').toggleClass('active');
+                if ($jq('#sidebar').hasClass('active')) {
+                    $jq('#container').css({'margin-left': '250px', 'width': 'calc(100% - 250px)'});
+                } else {
+                    $jq('#container').css({'margin-left': '0', 'width': '100%'});
+                }
+            }
+        });
+
+        function handleResize() {
+            if ($jq(window).width() > 991.98) {
+                $jq('#sidebar').removeClass('active');
+                if (!$jq('#sidebar').hasClass('hidden')) {
+                    $jq('#container').css({'margin-left': '250px', 'width': 'calc(100% - 250px)'});
+                } else {
+                    $jq('#container').css({'margin-left': '0', 'width': '100%'});
+                }
+            } else {
+                $jq('#sidebar').removeClass('hidden');
+                $jq('#container').css({'margin-left': '0', 'width': '100%'});
+            }
+        }
+        
+        $jq(window).on('resize', handleResize);
+        handleResize();
+
+        $jq('.join-btn').click(function() {
+            var button = $jq(this);
+            button.html('<i class="fa fa-spinner fa-spin"></i> Processing...');
+            button.attr('disabled', 'disabled');
+            var groupId = button.attr('data-id');
+
+            $jq.ajax({
+                url: "../join-group",
+                type: "POST",
+                data: {group_id: groupId},
+                success: function(res) {
+                    if(res.success) {
+                        // Show success message with sweet animation
+                        button.html('<i class="fa fa-check"></i> Success!');
+                        setTimeout(function() {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        // Show error message
+                        button.html('<i class="fa fa-times"></i> ' + res.msg);
+                        setTimeout(function() {
+                            button.html('<i class="fa fa-sign-in"></i> Join Now');
+                            button.removeAttr('disabled');
+                        }, 2000);
+                    }
+                },
+                error: function() {
+                    button.html('<i class="fa fa-times"></i> Error');
+                    setTimeout(function() {
+                        button.html('<i class="fa fa-sign-in"></i> Join Now');
+                        button.removeAttr('disabled');
+                    }, 2000);
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

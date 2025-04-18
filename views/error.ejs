@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="/Chat_App/images/logo.png">
+    <title>SocketTalk</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            text-align: center;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        .background-gif {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        .error-404, .general-error {
+            margin: 20px auto;
+            padding: 15px 25px;
+            border-radius: 12px;
+            display: inline-block;
+            background-color: rgba(255, 255, 255, 0.85);
+            border: 2px dashed #444;
+            animation: bounceIn 1.5s ease;
+            z-index: 1;
+            position: relative;
+        }
+
+        .error-404 {
+            color: #e74c3c;
+            font-size: 36px;
+            border-color: #e74c3c;
+        }
+
+        .general-error {
+            color: #f39c12;
+            font-size: 30px;
+            border-color: #f39c12;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            60% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+
+        .back-home {
+            display: inline-block;
+            text-decoration: none;
+            background: #3498db;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-top: 25px;
+            transition: 0.3s ease;
+            animation: fadeIn 2.5s ease forwards;
+            opacity: 0;
+        }
+
+        .back-home:hover {
+            background: #2980b9;
+            transform: scale(1.05);
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<% if (typeof message !== 'undefined' && message === '404 not found!') { %>
+    <img src="https://media1.giphy.com/media/14uQ3cOFteDaU/200w.gif?cid=6c09b952s1joeamqaytr4k6c26mw0lg0eo3bgcfsy8uje2x0&ep=v1_gifs_search&rid=200w.gif&ct=g" 
+         alt="404 Not Found" 
+         class="background-gif">
+<% } else { %>
+    <img src="https://media2.giphy.com/media/aIU9nrI16xVIfbDLGL/200w.gif?cid=6c09b952t0x0a1wmu28bdcwi21cuu667ep770brrn08qshxf&ep=v1_gifs_search&rid=200w.gif&ct=g" 
+         alt="General Error or Default" 
+         class="background-gif">
+<% } %>
+
+<% 
+    let cssClass = '';
+    if (typeof message !== 'undefined') {
+        if (message === '404 not found!') {
+            cssClass = 'error-404';
+        } else {
+            cssClass = 'general-error';
+        }
+%>
+    <div>
+        <h1 class="<%= cssClass %>"><%= message %></h1>
+        <a href="/Chat_App/login" class="back-home">Go to Login</a>
+    </div>
+<% } %>
+
+</body>
+</html>

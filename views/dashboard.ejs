@@ -12,7 +12,7 @@
 </head>
 <body>
     <%- include('layouts/header.ejs') %>
-    <h2 class="mb-4" style="margin-top: 10px;">
+    <h2 class="mb-4" style="margin-top: 20px;">
         <span style="color:rgb(0, 161, 224); font: 50px sans-serif;">Hi</span>,
         <span style="color:#0C356A; font-family: cursive; font-size: 40px;"> <%= user.name %> </span>
         <button class="profile-btn" id="profileBtn" data-toggle="modal" data-target="#profileModal"><i class="fa fa-user"> My Profile</i></button>
@@ -96,6 +96,7 @@
                     <ul>
                         <li>Permanently delete your account</li>
                         <li>Remove all your messages</li>
+                        <li>Remove all your Groups,Group chats & membership</li>
                         <li>Cannot be undone</li>
                     </ul>
                 </div>
@@ -295,7 +296,7 @@
                                     <i class="fa fa-trash" id="trash-btn" aria-hidden="true" data-id='${response.data._id}' data-toggle="modal" data-target="#deleteChatModal"></i>
                                     <i class="fa fa-edit" id="edit-btn" aria-hidden="true" data-msg="${formattedMessage}" data-id='${response.data._id}' data-toggle="modal" data-target="#editChatModal"></i>
                                     ${createReplyButton(response.data._id, chat)}
-                                    <h4 class="time" style="font-size: 8px;">${response.data.updatedAt}</h4>        
+                                    <h4 class="time" style="font-size: 8px;">${formatTime(response.data.updatedAt)}</h4>        
                                 </div>
                             `;
 
@@ -309,6 +310,19 @@
                 });
             });
 
+            function formatTime(dateString) {
+                if (!dateString) return '';
+                const date = new Date(dateString);
+                const options = { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric', 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                };
+                return date.toLocaleString(undefined, options);
+            }
+            
             socket.on('loadNewChat', function(data){
                 if (sender_id === data.receiver_id && receiver_id === data.sender_id) {
                     let formattedMessage = formatMessage(data.message); 
@@ -321,7 +335,7 @@
                                 <h5 id='${data._id}'>${formattedMessage}</h5>
                             </div>
                             ${createReplyButton(data._id, data.message)}
-                            <h4 class="time" style="font-size: 8px;">${data.updatedAt}</h4>
+                            <h4 class="time" style="font-size: 8px;">${formatTime(data.updatedAt)}</h4>
                         </div>
                     `;
                     $jq('#chat-container').append(html);
@@ -350,7 +364,7 @@
                                 <i class="fa fa-trash" aria-hidden="true" id="trash-btn" data-id='${chats[x]['_id']}' data-toggle="modal" data-target="#deleteChatModal"></i>
                                 <i class="fa fa-edit" id="edit-btn" aria-hidden="true" data-id='${chats[x]['_id']}' data-toggle="modal" data-target="#editChatModal"></i>
                                 ${createReplyButton(chats[x]['_id'], chats[x]['message'])}
-                                <h4 class='time' style="font-size: 8px;">${chats[x]['updatedAt']}</h4>
+                                <h4 class='time' style="font-size: 8px;">${formatTime(chats[x]['updatedAt'])}</h4>
                             </div>
                         `;
                     } else {
@@ -363,7 +377,7 @@
                                     <h5 id='${chats[x]['_id']}'>${formattedMessage}</h5>
                                 </div>
                                 ${createReplyButton(chats[x]['_id'], chats[x]['message'])}
-                                <h4 class='time' style="font-size: 8px;">${chats[x]['updatedAt']}</h4>
+                                <h4 class='time' style="font-size: 8px;">${formatTime(chats[x]['updatedAt'])}</h4>
                             </div>
                         `;
                     }

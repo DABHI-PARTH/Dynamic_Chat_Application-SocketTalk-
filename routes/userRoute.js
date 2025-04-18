@@ -49,6 +49,16 @@ user_route.post('/get-members', userController.getMembers);
 user_route.post('/add-members', userController.addMembers);
 user_route.post('/update-chat-group', upload, userController.updateChatGroup);
 user_route.post('/delete-chat-group', userController.deleteChatGroup);
+user_route.get('/share-group/:id', userController.shareGroup);
+user_route.post('/join-group', userController.joinGroup);
+user_route.get('/group-chat', userController.groupChats);
+
+user_route.post('/delete-profile', userController.deleteProfile);
+
+user_route.post('/group-save-chat', userController.saveGroupChat);
+user_route.post('/load-group-chats', userController.loadGroupChats);
+user_route.post('/delete-group-chat', userController.deleteGroupChats);
+user_route.post('/update-group-chat', userController.updateGroupChats);
 
 user_route.get('*', (req, res) => {
     res.redirect('/Chat_App/login')
